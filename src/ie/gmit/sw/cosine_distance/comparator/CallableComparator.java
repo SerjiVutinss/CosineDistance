@@ -11,6 +11,7 @@ import ie.gmit.sw.cosine_distance.data_structures.ResultBlock;
 
 /**
  * 
+ * 
  * @author Justin
  *
  */
@@ -19,8 +20,8 @@ public class CallableComparator implements Callable<ResultBlock> {
 //	private BlockingQueue<MapBlock> subject_frequency_maps;
 	private MapBlock query;
 	private MapBlock subject;
-	@SuppressWarnings("unused")
-	private BlockingQueue<ResultBlock> result_queue;
+//	@SuppressWarnings("unused")
+//	private BlockingQueue<ResultBlock> result_queue;
 	@SuppressWarnings("unused")
 	private CosineSimilarityController cs;
 
@@ -33,8 +34,6 @@ public class CallableComparator implements Callable<ResultBlock> {
 
 	@Override
 	public ResultBlock call() {
-//		System.out.println("COMPARATOR");
-//		System.out.println(subject.getMap().toString());
 		double dotProduct = 0, magQuery = 0, magSubject = 0;
 		dotProduct = CosineSimilarity.getDotProduct(query.getMap(), subject.getMap());
 
@@ -43,20 +42,10 @@ public class CallableComparator implements Callable<ResultBlock> {
 
 		// return cosine similarity
 		double similarity = dotProduct / Math.sqrt(magQuery * magSubject);
-
-//		String query_filename = CosineSimilarityController.query_filename;
-//		String subject_filename = cs.subject_files.get(subject.getFilenameHash());
-
 		String s = "Complete: " + query.getFileName() + " = " + Utils.fractionToPercent(similarity);
 		System.out.println(s);
-//		return;
 		ResultBlock result = new ResultBlock(query.getFileName(), similarity);
-//		result.setCosineSimilarity(similarity);
-//		result.setSubjectHash(query.getFileName());
-
 		return result;
-
-//		result_queue.put(e);
 
 	}
 

@@ -12,9 +12,10 @@ import ie.gmit.sw.cosine_distance.data_structures.MapBlock;
 import ie.gmit.sw.cosine_distance.data_structures.PoisonService;
 import ie.gmit.sw.cosine_distance.mapper.service.CallableFileMapperService;
 
+/*
+ * Handles mapping and comparison of a query file and one or more subject files
+ */
 public class MapperController {
-
-	Future<MapBlock> query_map;
 
 	private String queryFilePath; // path of query file
 	private List<Path> subjectFolderPaths; // path of subject folder
