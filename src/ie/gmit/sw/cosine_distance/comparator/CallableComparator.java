@@ -1,9 +1,10 @@
 package ie.gmit.sw.cosine_distance.comparator;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import ie.gmit.sw.Utils;
-import ie.gmit.sw.cosine_distance.CosineSimilarity;
 import ie.gmit.sw.cosine_distance.data_structures.MapBlock;
 import ie.gmit.sw.cosine_distance.data_structures.ResultBlock;
 
@@ -33,17 +34,19 @@ public class CallableComparator implements Callable<ResultBlock> {
 	}
 
 	/*
-	 * Performs the operations to calculate the cosine distance between two MapBlock objects
+	 * Performs the operations to calculate the cosine distance between two MapBlock
+	 * objects
 	 * 
-	 * Prints out the results and also returns a ResultBlock object (unimplemented)
+	 * Prints out the results and also returns a ResultBlock object (unused)
 	 */
 	@Override
 	public ResultBlock call() {
-		double dotProduct = 0, magQuery = 0, magSubject = 0;
-		dotProduct = CosineSimilarity.getDotProduct(query.getMap(), subject.getMap());
+		double dotProduct = 0, magQuery = 0, magSubject = 0; // declare some variables
 
-		magQuery = CosineSimilarity.getMagnitude(query.getMap());
-		magSubject = CosineSimilarity.getMagnitude(subject.getMap());
+		dotProduct = getDotProduct(query.getMap(), subject.getMap());
+
+		magQuery = getMagnitude(query.getMap());
+		magSubject = getMagnitude(subject.getMap());
 
 		// return cosine similarity
 		double similarity = dotProduct / Math.sqrt(magQuery * magSubject);
@@ -51,7 +54,41 @@ public class CallableComparator implements Callable<ResultBlock> {
 		System.out.println(s);
 		ResultBlock result = new ResultBlock(query.getFileName(), similarity);
 		return result;
+	}
 
+	/**
+	 * Calculates the dot product of two Maps
+	 * 
+	 * @param a first Map
+	 * @param b second Map
+	 * @return dot product of the two maps
+	 */
+	private double getDotProduct(Map<Integer, Integer> a, Map<Integer, Integer> b) {
+		double dotProduct = 0;
+
+		// Get unique terms from both sequences
+		HashSet<Integer> intersection = new HashSet<>(a.keySet());
+		intersection.retainAll(b.keySet());
+
+		// Calculate dot product
+		for (int item : intersection) {
+			dotProduct += a.get(item) * b.get(item);
+		}
+		return dotProduct;
+	}
+
+	/**
+	 * Returns the magnitude of a Map
+	 * 
+	 * @param m calculate the magnitude of this Map
+	 * @return magnitude of Map m
+	 */
+	private double getMagnitude(Map<Integer, Integer> m) {
+		double mag = 0;
+		for (int s : m.keySet()) {
+			mag += Math.pow(m.get(s), 2);
+		}
+		return mag;
 	}
 
 }

@@ -11,28 +11,28 @@ package ie.gmit.sw.cosine_distance.data_structures;
 public class CharBlock extends Block {
 
 	private char[] chars; // the charArray
-	private int length; // the length of the charArray
+//	private int length; // the length of the charArray
 
 	public CharBlock(char[] chars, int length) {
 		this.chars = chars;
-		this.length = length;
+//		this.length = length;
 	}
 
 	public CharBlock(char[] chars, int length, String fileName) {
 		this.chars = chars;
-		this.length = length;
+//		this.length = length;
 		super.setFileName(fileName);
 	}
 
 	public char[] getChars() {
 		return chars;
 	}
-
-	public int getLength() {
-		return length;
-	}
-
-	public void setLength(int length) {
-		this.length = length;
-	}
+//
+//	public int getLength() {
+//		return length;
+//	}
+//
+//	public void setLength(int length) {
+//		this.length = length;
+//	}
 }

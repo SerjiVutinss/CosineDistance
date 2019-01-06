@@ -6,15 +6,15 @@ public class ResultBlock extends Block {
 
 	public ResultBlock(String fileName, double cosineSimilarity) {
 		super(fileName);
-		this.setCosineSimilarity(cosineSimilarity);
+		this.cosineSimilarity = cosineSimilarity;
 	}
 
 	public double getCosineSimilarity() {
 		return cosineSimilarity;
 	}
 
-	public void setCosineSimilarity(double cosineSimilarity) {
-		this.cosineSimilarity = cosineSimilarity;
-	}
+//	public void setCosineSimilarity(double cosineSimilarity) {
+//		this.cosineSimilarity = cosineSimilarity;
+//	}
 
 }

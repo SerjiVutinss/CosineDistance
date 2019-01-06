@@ -9,19 +9,19 @@ public class ShingleBlock extends Block {
 	}
 
 	public ShingleBlock(int[] data) {
-		this.setData(data);
+		this.data = data;
 	}
 
 	public ShingleBlock(int[] data, String fileName) {
 		super(fileName);
-		this.setData(data);
+		this.data = data;
 	}
 
 	public int[] getData() {
 		return this.data;
 	}
 
-	public void setData(int[] data) {
-		this.data = data;
-	}
+//	public void setData(int[] data) {
+//		this.data = data;
+//	}
 }

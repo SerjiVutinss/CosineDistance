@@ -66,10 +66,6 @@ public class CosineSimilarityController {
 		this(new RunConfiguration(queryFilePath, subjectFolderPath, shingleSize));
 	}
 
-	public Future<MapBlock> getQueryFrequencyMap() {
-		return queryFrequencyMap;
-	}
-
 	public void setQueryFrequencyMap(Future<MapBlock> queryFrequencyMap) {
 		this.queryFrequencyMap = queryFrequencyMap;
 	}

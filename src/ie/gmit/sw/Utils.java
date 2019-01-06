@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
-public class Utils {
+public abstract class Utils {
 
 	public static String getResourceDir() {
 		String resDir = System.getProperty("user.dir") + File.separatorChar + "resources" + File.separatorChar;
