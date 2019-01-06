@@ -1,16 +1,12 @@
 package ie.gmit.sw.cosine_distance.data_structures;
 
-public class Result {
+public class ResultBlock extends Block {
 
-	private int subjectHash;
 	private double cosineSimilarity;
 
-	public int getSubjectHash() {
-		return subjectHash;
-	}
-
-	public void setSubjectHash(int subjectHash) {
-		this.subjectHash = subjectHash;
+	public ResultBlock(String fileName, double cosineSimilarity) {
+		super(fileName);
+		this.setCosineSimilarity(cosineSimilarity);
 	}
 
 	public double getCosineSimilarity() {

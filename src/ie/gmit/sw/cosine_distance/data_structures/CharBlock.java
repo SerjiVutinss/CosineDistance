@@ -18,10 +18,10 @@ public class CharBlock extends Block {
 		this.length = length;
 	}
 
-	public CharBlock(char[] chars, int length, int filenameHash) {
+	public CharBlock(char[] chars, int length, String fileName) {
 		this.chars = chars;
 		this.length = length;
-		super.setFilenameHash(filenameHash);
+		super.setFileName(fileName);
 	}
 
 	public char[] getChars() {

@@ -2,21 +2,21 @@ package ie.gmit.sw.cosine_distance.data_structures;
 
 public abstract class Block {
 
-	private int filenameHash;
+	private String fileName;
 
 	public Block() {
 	}
 
-	public Block(int filenameHash) {
-		this.setFilenameHash(filenameHash);
+	public Block(String fileName) {
+		this.setFileName(fileName);
 	}
 
-	public void setFilenameHash(int filenameHash) {
-		this.filenameHash = filenameHash;
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
-	public int getFilenameHash() {
-		return this.filenameHash;
+	public String getFileName() {
+		return this.fileName;
 	}
 
 }

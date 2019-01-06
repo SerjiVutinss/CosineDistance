@@ -4,9 +4,13 @@ import java.util.concurrent.Callable;
 
 public class PoisonService implements Callable<MapBlock> {
 
+	public PoisonService() {
+
+	}
+
 	@Override
 	public MapBlock call() throws Exception {
-		MapBlock mb = new MapBlockPoison();
+		MapBlock mb = new MapBlockPoison("");
 		return mb;
 	}
 

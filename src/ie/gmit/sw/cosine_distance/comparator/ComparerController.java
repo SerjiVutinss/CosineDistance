@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import ie.gmit.sw.CosineSimilarityController;
 import ie.gmit.sw.cosine_distance.data_structures.MapBlock;
 import ie.gmit.sw.cosine_distance.data_structures.MapBlockPoison;
 
@@ -14,11 +15,13 @@ public class ComparerController implements Callable<Boolean> {
 
 	private Future<MapBlock> query_frequency_map;
 	private BlockingQueue<Future<MapBlock>> subject_frequency_maps;
+	private CosineSimilarityController cs;
 
 	public ComparerController(Future<MapBlock> query_frequency_map,
-			BlockingQueue<Future<MapBlock>> subject_frequency_maps) {
+			BlockingQueue<Future<MapBlock>> subject_frequency_maps, CosineSimilarityController cs) {
 		this.query_frequency_map = query_frequency_map;
 		this.subject_frequency_maps = subject_frequency_maps;
+		this.cs = cs;
 	}
 
 	@Override
@@ -36,7 +39,7 @@ public class ComparerController implements Callable<Boolean> {
 				System.out.println("Got maps AND POISON");
 				keepALive = false;
 			} else {
-				executors.submit(new CallableComparator(query_frequency_map.get(), mb, null));
+				executors.submit(new CallableComparator(query_frequency_map.get(), mb, cs));
 			}
 		}
 		executors.shutdown();

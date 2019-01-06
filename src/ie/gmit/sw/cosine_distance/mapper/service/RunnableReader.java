@@ -70,13 +70,13 @@ public class RunnableReader implements Runnable {
 			while ((c = in.read(charBuf, 0, chunkSize)) > 0) {
 				// try to place a new CharBlock on the queue using the character array and
 				// actual characters read from file
-				readQueue.put(new CharBlock(charBuf, c, inputFilePath.hashCode()));
+				readQueue.put(new CharBlock(charBuf, c, inputFilePath));
 				charBuf = new char[chunkSize]; // reinitialize the char array for reuse
 			}
 			in.close(); // close the BufferedReader
 
 			// we have reached the end of the file, add the Poison to this queue
-			readQueue.put(new CharBlockPoison(inputFilePath.hashCode()));
+			readQueue.put(new CharBlockPoison(inputFilePath));
 		} catch (IOException | InterruptedException e) {
 //			Thread t = Thread.currentThread();
 //			t.getUncaughtExceptionHandler().uncaughtException(t, e);

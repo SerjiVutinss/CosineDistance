@@ -4,16 +4,16 @@ public class ShingleBlock extends Block {
 
 	private int[] data;
 
-	public ShingleBlock(int filenameHash) {
-		super(filenameHash);
+	public ShingleBlock(String fileName) {
+		super(fileName);
 	}
 
 	public ShingleBlock(int[] data) {
 		this.setData(data);
 	}
 
-	public ShingleBlock(int[] data, int filenameHash) {
-		super(filenameHash);
+	public ShingleBlock(int[] data, String fileName) {
+		super(fileName);
 		this.setData(data);
 	}
 

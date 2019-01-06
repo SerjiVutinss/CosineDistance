@@ -75,6 +75,6 @@ public class CallableFileMapperService implements Callable<MapBlock> {
 		Future<Map<Integer, Integer>> frequencyMap = executors.submit(new CallableMapper(shingleQueue));
 
 		// return a new MapBlock Future from this thread when it is ready
-		return new MapBlock(frequencyMap.get(), inputFilePath.hashCode());
+		return new MapBlock(frequencyMap.get(), inputFilePath);
 	}
 }

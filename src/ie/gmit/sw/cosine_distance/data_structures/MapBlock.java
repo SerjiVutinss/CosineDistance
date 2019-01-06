@@ -6,12 +6,12 @@ public class MapBlock extends Block {
 
 	private Map<Integer, Integer> map;
 
-	public MapBlock(int filenameHash) {
-		super(filenameHash);
+	public MapBlock(String fileName) {
+		super(fileName);
 	}
 
-	public MapBlock(Map<Integer, Integer> map, int filenameHash) {
-		super(filenameHash);
+	public MapBlock(Map<Integer, Integer> map, String fileName) {
+		super(fileName);
 		this.map = map;
 	}
 

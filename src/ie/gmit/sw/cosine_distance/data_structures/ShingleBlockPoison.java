@@ -2,13 +2,13 @@ package ie.gmit.sw.cosine_distance.data_structures;
 
 public class ShingleBlockPoison extends ShingleBlock {
 
-	public ShingleBlockPoison(int filenameHash) {
-		super(filenameHash);
+	public ShingleBlockPoison(String fileName) {
+		super(fileName);
 	}
 
-	public ShingleBlockPoison(int[] data, int filenameHash) {
+	public ShingleBlockPoison(int[] data, String fileName) {
 		super(data);
-		this.setFilenameHash(filenameHash);
+		this.setFileName(fileName);
 	}
 
 }

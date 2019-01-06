@@ -42,18 +42,28 @@ public class CosineSimilarityController {
 	private String subjectFolderPath;
 	private List<Path> file_paths = new ArrayList<>();
 
-	public static Map<Integer, String> subject_files;
+	private Map<Integer, String> subject_files;
 
-	public CosineSimilarityController(String queryFilePath, String subjectFolderPath, int shingleSize) {
-		this.queryFilePath = queryFilePath;
-		this.subjectFolderPath = subjectFolderPath;
-		this.shingleSize = shingleSize;
-	}
-
+	/**
+	 * Constructor
+	 * 
+	 * @param rc a RunConfiguration object
+	 */
 	public CosineSimilarityController(RunConfiguration rc) {
 		this.queryFilePath = rc.getQueryFilePath();
 		this.subjectFolderPath = rc.getSubjectFolderPath();
 		this.shingleSize = rc.getShingleSize();
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param queryFilePath     path to query file
+	 * @param subjectFolderPath path to subject folder
+	 * @param shingleSize       shingle size to be used by Runnable Shingler
+	 */
+	public CosineSimilarityController(String queryFilePath, String subjectFolderPath, int shingleSize) {
+		this(new RunConfiguration(queryFilePath, subjectFolderPath, shingleSize));
 	}
 
 	public Future<MapBlock> getQueryFrequencyMap() {
@@ -85,7 +95,7 @@ public class CosineSimilarityController {
 		ExecutorService executors = Executors.newCachedThreadPool(); // create an ExecutorService
 		// create and start a ComparerController for the mapped files - blocks until all
 		// have completed
-		executors.submit(new ComparerController(queryFrequencyMap, subjectFrequencyMaps)).get();
+		executors.submit(new ComparerController(queryFrequencyMap, subjectFrequencyMaps, this)).get();
 		incrementThreadCount();
 		executors.shutdown(); // not really needed but added for completeness
 

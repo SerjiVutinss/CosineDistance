@@ -51,13 +51,13 @@ public class RunnableShingler implements Runnable {
 				cb = readQueue.take();
 				// compare to POISON, if true, break from while loop
 				if (cb instanceof CharBlockPoison) {
-					sb = new ShingleBlockPoison(cb.getFilenameHash());
+					sb = new ShingleBlockPoison(cb.getFileName());
 					this.shingleQueue.put(sb);
 					keepAlive = false;
 				} else {
 					// still looping, shingle this char array
 					int[] shingle = Utils.chunkStringChars(cb.getChars(), shingleSize);
-					sb = new ShingleBlock(shingle, cb.getFilenameHash());
+					sb = new ShingleBlock(shingle, cb.getFileName());
 					// add to the shingle queue
 					this.shingleQueue.put(sb);
 				}
