@@ -16,13 +16,27 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
-import ie.gmit.sw.comparator.ComparerController;
-import ie.gmit.sw.data_structures.MapBlock;
-import ie.gmit.sw.mapper.MapperController;
+import ie.gmit.sw.cosine_distance.comparator.ComparerController;
+import ie.gmit.sw.cosine_distance.data_structures.MapBlock;
+import ie.gmit.sw.cosine_distance.data_structures.RunConfiguration;
+import ie.gmit.sw.cosine_distance.mapper.MapperController;
 
 public class CosineSimilarityController {
 
 	private static Future<MapBlock> queryFrequencyMap = null;
+	private int shingleSize;
+
+	public CosineSimilarityController(String queryFilePath, String subjectFolderPath, int shingleSize) {
+		this.queryFilePath = queryFilePath;
+		this.subjectFolderPath = subjectFolderPath;
+		this.shingleSize = shingleSize;
+	}
+
+	public CosineSimilarityController(RunConfiguration rc) {
+		this.queryFilePath = rc.getQueryFilePath();
+		this.subjectFolderPath = rc.getSubjectFolderPath();
+		this.shingleSize = rc.getShingleSize();
+	}
 
 	public Future<MapBlock> getQueryFrequencyMap() {
 		return queryFrequencyMap;
@@ -38,8 +52,8 @@ public class CosineSimilarityController {
 	private BlockingQueue<Future<MapBlock>> subject_frequency_maps = new ArrayBlockingQueue<>(queueCapacity);
 
 	private int maxThreadCount = 0;
-	private String query_filename;
-	private String subjects_folder;
+	private String queryFilePath;
+	private String subjectFolderPath;
 	private List<Path> file_paths = new ArrayList<>();
 
 	public static Map<Integer, String> subject_files;
@@ -49,15 +63,15 @@ public class CosineSimilarityController {
 		long startTime = System.nanoTime();
 
 		// input files/folder
-		query_filename = Utils.getResourceDir() + "WarAndPeace-LeoTolstoy.txt";
-		subjects_folder = Utils.getResourceDir() + "input_files/";
+//		queryFilePath = Utils.getResourceDir() + "WarAndPeace-LeoTolstoy.txt";
+//		subjectFolderPath = Utils.getResourceDir() + "input_files/";
 
 		//
 		file_paths = new ArrayList<>();
 
 		subject_files = new HashMap<Integer, String>();
 
-		try (Stream<Path> paths = Files.walk(Paths.get(subjects_folder))) {
+		try (Stream<Path> paths = Files.walk(Paths.get(subjectFolderPath))) {
 			paths.filter(Files::isRegularFile).forEach(file_paths::add);
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -68,7 +82,7 @@ public class CosineSimilarityController {
 			subject_files.put(p.toAbsolutePath().toString().hashCode(), p.toAbsolutePath().toString());
 		}
 
-		new MapperController(query_filename, file_paths, queryFrequencyMap, subject_frequency_maps, this);
+		new MapperController(queryFilePath, file_paths, queryFrequencyMap, subject_frequency_maps, shingleSize, this);
 
 		incrementThreadCount(Thread.activeCount());
 
