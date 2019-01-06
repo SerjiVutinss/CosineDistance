@@ -20,57 +20,67 @@ public class MapperController {
 
 	Future<MapBlock> query_map;
 
-	private String query_filename;
-	private List<Path> subject_file_paths;
+	private String queryFilePath;
+	private List<Path> subjectFolderPaths;
 	@SuppressWarnings("unused")
-	private Future<MapBlock> query_frequency_map;
-	private BlockingQueue<Future<MapBlock>> subject_frequency_maps = new ArrayBlockingQueue<>(100);
+	private Future<MapBlock> queryFrequencyMap;
+	private BlockingQueue<Future<MapBlock>> subjectFrequencyMapQueue = new ArrayBlockingQueue<>(100);
 
-	private ExecutorService executors;
+//	private ExecutorService executors;
 
 	private CosineSimilarityController csController;
 
 	private int shingleSize;
 
+	private int queueCapacity;
+
 	public MapperController() {
 	}
 
-	public MapperController(String query_filename, List<Path> subject_file_paths, Future<MapBlock> query_frequency_map,
-			BlockingQueue<Future<MapBlock>> subject_frequency_maps, int shingleSize,
-			CosineSimilarityController csController) throws InterruptedException, ExecutionException {
+	public MapperController(String queryFilePath, List<Path> subjectFolderPaths, Future<MapBlock> queryFrequencyMap,
+			BlockingQueue<Future<MapBlock>> subjectFrequencyMapQueue, CosineSimilarityController csController,
+			int shingleSize) throws InterruptedException, ExecutionException {
+
+		this.queryFilePath = queryFilePath;
+		this.subjectFolderPaths = subjectFolderPaths;
+
+		this.queryFrequencyMap = queryFrequencyMap;
+		this.subjectFrequencyMapQueue = subjectFrequencyMapQueue;
+
+		this.csController = csController; // the controller which has called this one
 
 		this.shingleSize = shingleSize;
-		this.csController = csController;
-		this.executors = Executors.newCachedThreadPool();
-		this.query_filename = query_filename;
-		this.subject_file_paths = subject_file_paths;
-		this.query_frequency_map = query_frequency_map;
-		this.subject_frequency_maps = subject_frequency_maps;
+	}
 
-		this.run();
+	public MapperController(String queryFilePath, List<Path> subjectFolderPath, Future<MapBlock> queryFrequencyMap,
+			BlockingQueue<Future<MapBlock>> subjectFrequencyMapQueue, CosineSimilarityController csController,
+			int shingleSize, int queueCapacity) throws InterruptedException, ExecutionException {
+
+		this(queryFilePath, subjectFolderPath, queryFrequencyMap, subjectFrequencyMapQueue, csController, shingleSize);
+		this.queueCapacity = queueCapacity;
 	}
 
 	/**
 	 * 
 	 * @throws InterruptedException
 	 */
-	private void run() throws InterruptedException {
+	public void run() throws InterruptedException {
 
-		this.executors = Executors.newCachedThreadPool();
-		Callable<MapBlock> query_mapper = new CallableFileMapperService(query_filename, shingleSize);
+		ExecutorService executors = Executors.newCachedThreadPool();
+		Callable<MapBlock> query_mapper = new CallableFileMapperService(queryFilePath, shingleSize, queueCapacity);
 		this.csController.setQueryFrequencyMap(executors.submit(query_mapper));
 
 		// for each file, submit a new MapperService and add this to the list of mappers
 		List<Future<MapBlock>> subject_maps = new ArrayList<>();
-		for (Path p : subject_file_paths) {
-			subject_maps.add(
-					this.executors.submit(new CallableFileMapperService(p.toAbsolutePath().toString(), shingleSize)));
+		for (Path p : subjectFolderPaths) {
+			subject_maps.add(executors
+					.submit(new CallableFileMapperService(p.toAbsolutePath().toString(), shingleSize, queueCapacity)));
 		}
 
 		for (Future<MapBlock> f : subject_maps) {
-			subject_frequency_maps.put(f);
+			subjectFrequencyMapQueue.put(f);
 		}
-		Future<MapBlock> poison = this.executors.submit(new PoisonService());
-		subject_frequency_maps.put(poison);
+		Future<MapBlock> poison = executors.submit(new PoisonService());
+		subjectFrequencyMapQueue.put(poison);
 	}
 }

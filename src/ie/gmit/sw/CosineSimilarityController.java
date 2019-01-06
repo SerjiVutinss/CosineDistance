@@ -25,6 +25,18 @@ public class CosineSimilarityController {
 
 	private static Future<MapBlock> queryFrequencyMap = null;
 	private int shingleSize;
+	@SuppressWarnings("unused")
+	private int queueCapacity = 50;
+
+	private volatile MapBlock queryMap;
+	private BlockingQueue<Future<MapBlock>> subjectFrequencyMaps = new ArrayBlockingQueue<>(queueCapacity);
+
+	private int maxThreadCount = 0;
+	private String queryFilePath;
+	private String subjectFolderPath;
+	private List<Path> file_paths = new ArrayList<>();
+
+	public static Map<Integer, String> subject_files;
 
 	public CosineSimilarityController(String queryFilePath, String subjectFolderPath, int shingleSize) {
 		this.queryFilePath = queryFilePath;
@@ -45,18 +57,6 @@ public class CosineSimilarityController {
 	public void setQueryFrequencyMap(Future<MapBlock> queryFrequencyMap) {
 		CosineSimilarityController.queryFrequencyMap = queryFrequencyMap;
 	}
-
-	@SuppressWarnings("unused")
-	private volatile MapBlock queryMap;
-	private int queueCapacity = 50;
-	private BlockingQueue<Future<MapBlock>> subject_frequency_maps = new ArrayBlockingQueue<>(queueCapacity);
-
-	private int maxThreadCount = 0;
-	private String queryFilePath;
-	private String subjectFolderPath;
-	private List<Path> file_paths = new ArrayList<>();
-
-	public static Map<Integer, String> subject_files;
 
 	public void start() throws InterruptedException, ExecutionException {
 
@@ -82,12 +82,13 @@ public class CosineSimilarityController {
 			subject_files.put(p.toAbsolutePath().toString().hashCode(), p.toAbsolutePath().toString());
 		}
 
-		new MapperController(queryFilePath, file_paths, queryFrequencyMap, subject_frequency_maps, shingleSize, this);
+		new MapperController(queryFilePath, file_paths, queryFrequencyMap, subjectFrequencyMaps, this, shingleSize,
+				queueCapacity).run();
 
 		incrementThreadCount(Thread.activeCount());
 
 		ExecutorService executors = Executors.newCachedThreadPool();
-		ComparerController cc = new ComparerController(queryFrequencyMap, subject_frequency_maps);
+		ComparerController cc = new ComparerController(queryFrequencyMap, subjectFrequencyMaps);
 		incrementThreadCount(Thread.activeCount());
 
 		Future<Boolean> result = executors.submit(cc);
