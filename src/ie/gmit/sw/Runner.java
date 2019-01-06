@@ -17,6 +17,7 @@ public class Runner {
 		String queryFilePath = Utils.getResourceDir() + "WarAndPeace-LeoTolstoy.txt";
 		String subjectFolderPath = Utils.getResourceDir() + "input_files/";
 
+		System.out.println("Starting...");
 		RunConfiguration rc;
 		if (isDebug) {
 			rc = new RunConfiguration(queryFilePath, subjectFolderPath, shingleSize);
