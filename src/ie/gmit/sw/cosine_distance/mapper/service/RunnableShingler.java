@@ -23,7 +23,7 @@ public class RunnableShingler implements Runnable {
 	private int shingleSize;
 
 	/**
-	 * Only constructor for this class
+	 * Constructor
 	 * 
 	 * @param readQueue    CharBlocks are read from this queue
 	 * @param shingleQueue ShingleBlocks are placed on this queue

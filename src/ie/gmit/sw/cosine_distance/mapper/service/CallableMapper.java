@@ -20,7 +20,7 @@ public class CallableMapper implements Callable<Map<Integer, Integer>> {
 	private BlockingQueue<ShingleBlock> shingleQueue;
 
 	/**
-	 * Default constructor
+	 * Constructor
 	 * 
 	 * @param shingleQueue the queue to read ShingleBlocks from
 	 * @return frequencyMap the map built from the queue's ShingleBlocks

@@ -23,7 +23,7 @@ import ie.gmit.sw.cosine_distance.mapper.MapperController;
 
 public class CosineSimilarityController {
 
-	private static Future<MapBlock> queryFrequencyMap = null;
+	private Future<MapBlock> queryFrequencyMap = null;
 	private int shingleSize;
 	@SuppressWarnings("unused")
 	private int queueCapacity = 50;
@@ -55,7 +55,7 @@ public class CosineSimilarityController {
 	}
 
 	public void setQueryFrequencyMap(Future<MapBlock> queryFrequencyMap) {
-		CosineSimilarityController.queryFrequencyMap = queryFrequencyMap;
+		this.queryFrequencyMap = queryFrequencyMap;
 	}
 
 	public void start() throws InterruptedException, ExecutionException {

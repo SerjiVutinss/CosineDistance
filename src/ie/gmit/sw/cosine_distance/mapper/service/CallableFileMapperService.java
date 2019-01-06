@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import ie.gmit.sw.cosine_distance.data_structures.CharBlock;
 import ie.gmit.sw.cosine_distance.data_structures.MapBlock;
@@ -16,8 +16,9 @@ import ie.gmit.sw.cosine_distance.data_structures.ShingleBlock;
 
 /**
  * 
- * Runnable, high level service class which maps a single file into memory by
- * using the lower level Reader, Shingler and Mapper classes
+ * Runnable, high level service class which maps a single file into a MapBlock
+ * by using the lower level RunnableReader, RunnableShingler and CallableMapper
+ * classes
  * 
  * @returns a Future of type MapBlock
  * 
@@ -27,50 +28,53 @@ import ie.gmit.sw.cosine_distance.data_structures.ShingleBlock;
 public class CallableFileMapperService implements Callable<MapBlock> {
 
 	public static Charset charSet = Charset.forName("UTF-8");
-	private String inputFileName;
+	private String inputFilePath;
 	private int shingleSize;
 	private int queueCapacity;
 
 	/**
-	 * Default constructor
+	 * Constructor
 	 * 
-	 * @param inputFileName
-	 * @param shingleSize
+	 * @param inputFilePath path of source file to be mapped
+	 * @param shingleSize   the shingleSize to be used in the RunnableShingler class
+	 * @param queueCapacity the capacity of the queues to be used in each thread
 	 */
-	public CallableFileMapperService(String inputFileName, int shingleSize, int queueCapacity) {
-		this.inputFileName = inputFileName;
+	public CallableFileMapperService(String inputFilePath, int shingleSize, int queueCapacity) {
+		this.inputFilePath = inputFilePath;
 		this.shingleSize = shingleSize;
 		this.queueCapacity = queueCapacity;
 	}
 
-	// read a file from the FS, placing chunks onto a blocking queue
-	private BlockingQueue<CharBlock> query_read_queue = null;
-	// parse these chunks into shingles, placing onto another blocking queue
-	private BlockingQueue<ShingleBlock> query_shingle_queue = null;
-
 	/**
-	 * Something
+	 * Begin a RunnableReader, RunnableShingler and CallableMapper thread for the
+	 * input file.
+	 * 
+	 * Blocks until the file has been mapped by the CallableMapper
+	 * 
+	 * @throws ExecutionException
+	 * @throws InterruptedException
+	 * 
+	 * @returns a Future of type MapBlock, which holds a complete mapping of the
+	 *          input file
 	 */
 	@Override
-	public MapBlock call() throws Exception {
+	public MapBlock call() throws InterruptedException, ExecutionException {
 
-		query_read_queue = new ArrayBlockingQueue<CharBlock>(queueCapacity);
-		query_shingle_queue = new ArrayBlockingQueue<>(queueCapacity);
+		// instantiate the two BlockingQueues which are to be used by the threads
+		BlockingQueue<CharBlock> readQueue = new ArrayBlockingQueue<CharBlock>(queueCapacity);
+		BlockingQueue<ShingleBlock> shingleQueue = new ArrayBlockingQueue<>(queueCapacity);
 
-		ExecutorService mapper_service = Executors.newCachedThreadPool();
-		// read the input into the read_queue
-		RunnableReader t_reader = new RunnableReader(inputFileName, query_read_queue);
-		RunnableShingler t_shingler = new RunnableShingler(query_read_queue, query_shingle_queue, shingleSize);
-		mapper_service.submit(t_reader);
-		mapper_service.submit(t_shingler);
-		Callable<Map<Integer, Integer>> t_mapper = new CallableMapper(query_shingle_queue);
-		Future<Map<Integer, Integer>> mapper_frequency = mapper_service.submit(t_mapper);
+		// create an executor service used to map the file
+		ExecutorService executors = Executors.newCachedThreadPool();
 
-		mapper_service.shutdown();
-		mapper_service.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-//		System.out.println("Mapper Complete: " + input_filename);
+		// start the Reader and Shingler threads
+		executors.submit(new RunnableReader(inputFilePath, readQueue));
+		executors.submit(new RunnableShingler(readQueue, shingleQueue, shingleSize));
 
-		return new MapBlock(mapper_frequency.get(), inputFileName.hashCode());
+		// submit a CallableMapper to the executor service and store it's future
+		Future<Map<Integer, Integer>> frequencyMap = executors.submit(new CallableMapper(shingleQueue));
 
+		// return a new MapBlock Future from this thread when it is ready
+		return new MapBlock(frequencyMap.get(), inputFilePath.hashCode());
 	}
 }
