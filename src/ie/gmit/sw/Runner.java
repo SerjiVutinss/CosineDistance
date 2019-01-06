@@ -8,7 +8,7 @@ public class Runner {
 
 	public static void main(String[] args) {
 
-		boolean isDebug = true;
+		boolean isDebug = false;
 
 		/**
 		 * Testing config
