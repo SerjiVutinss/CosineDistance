@@ -1,37 +1,42 @@
 package ie.gmit.sw.cosine_distance.comparator;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 
-import ie.gmit.sw.CosineSimilarityController;
 import ie.gmit.sw.Utils;
 import ie.gmit.sw.cosine_distance.CosineSimilarity;
 import ie.gmit.sw.cosine_distance.data_structures.MapBlock;
 import ie.gmit.sw.cosine_distance.data_structures.ResultBlock;
 
 /**
+ * Compares two MapBlock objects and returns a Future ResultBlock object.
  * 
+ * Returned Future is never used as result is simply printed to console from
+ * within this class
  * 
  * @author Justin
  *
  */
 public class CallableComparator implements Callable<ResultBlock> {
 
-//	private BlockingQueue<MapBlock> subject_frequency_maps;
 	private MapBlock query;
 	private MapBlock subject;
-//	@SuppressWarnings("unused")
-//	private BlockingQueue<ResultBlock> result_queue;
-	@SuppressWarnings("unused")
-	private CosineSimilarityController cs;
 
-	public CallableComparator(MapBlock query, MapBlock subject, CosineSimilarityController cs) {
+	/**
+	 * Constructor
+	 * 
+	 * @param query   the query MapBlock
+	 * @param subject the subject MapBlock
+	 */
+	public CallableComparator(MapBlock query, MapBlock subject) {
 		this.query = query;
 		this.subject = subject;
-//		this.result_queue = result_queue;
-		this.cs = cs;
 	}
 
+	/*
+	 * Performs the operations to calculate the cosine distance between two MapBlock objects
+	 * 
+	 * Prints out the results and also returns a ResultBlock object (unimplemented)
+	 */
 	@Override
 	public ResultBlock call() {
 		double dotProduct = 0, magQuery = 0, magSubject = 0;

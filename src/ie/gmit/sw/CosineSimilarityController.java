@@ -95,7 +95,7 @@ public class CosineSimilarityController {
 		ExecutorService executors = Executors.newCachedThreadPool(); // create an ExecutorService
 		// create and start a ComparerController for the mapped files - blocks until all
 		// have completed
-		executors.submit(new ComparerController(queryFrequencyMap, subjectFrequencyMaps, this)).get();
+		executors.submit(new ComparerController(queryFrequencyMap, subjectFrequencyMaps)).get();
 		incrementThreadCount();
 		executors.shutdown(); // not really needed but added for completeness
 
